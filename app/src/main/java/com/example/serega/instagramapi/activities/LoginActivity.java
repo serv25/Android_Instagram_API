@@ -60,7 +60,6 @@ public class LoginActivity extends Activity {
             if (url.contains(Constants.CONTAINS_URI)) {
                 codeFromUrl = url.substring(Constants.CONTAINS_URI.length(), url.length());
                 executeRequest();
-                /* add new page here */
             }
             return false;
         }
@@ -108,8 +107,8 @@ public class LoginActivity extends Activity {
                     intent.putExtra("username", user.getUsername());
                     intent.putExtra("bio", user.getBio());
                     intent.putExtra("website", user.getWebsite());
-                    intent.putExtra("profilePicture", user.getProfilePicture());
-                    intent.putExtra("fullName", user.getFullName());
+                    intent.putExtra("profilePicture", user.getProfile_picture());
+                    intent.putExtra("fullName", user.getFull_name());
                     intent.putExtra("id", user.getId());
                     startActivity(intent);
 
