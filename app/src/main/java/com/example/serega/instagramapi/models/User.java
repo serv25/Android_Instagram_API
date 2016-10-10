@@ -57,4 +57,15 @@ public class User {
         this.id = id;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                ", bio='" + bio + '\'' +
+                ", website='" + website + '\'' +
+                ", profilePicture='" + profilePicture + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", id='" + id + '\'' +
+                '}';
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.serega.instagramapi.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
@@ -102,6 +103,16 @@ public class LoginActivity extends Activity {
                 if (response.isSuccessful()) {
                     TokenResponse tokenResponse = response.body();
                     User user =  tokenResponse.getUser();
+
+                    Intent intent = new Intent(LoginActivity.this, UserProfileActivity.class);
+                    intent.putExtra("username", user.getUsername());
+                    intent.putExtra("bio", user.getBio());
+                    intent.putExtra("website", user.getWebsite());
+                    intent.putExtra("profilePicture", user.getProfilePicture());
+                    intent.putExtra("fullName", user.getFullName());
+                    intent.putExtra("id", user.getId());
+                    startActivity(intent);
+
                 } else {
                     printErrorLogs(response);
                 }
