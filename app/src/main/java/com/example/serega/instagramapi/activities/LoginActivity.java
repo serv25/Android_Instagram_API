@@ -1,4 +1,4 @@
-package com.example.serega.instagramapi;
+package com.example.serega.instagramapi.activities;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -7,9 +7,11 @@ import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.example.serega.instagramapi.interfaces.InstagramClient;
-import com.example.serega.instagramapi.models.TokenRequest;
+import com.example.serega.instagramapi.Constants;
+import com.example.serega.instagramapi.R;
 import com.example.serega.instagramapi.models.TokenResponse;
+import com.example.serega.instagramapi.models.User;
+import com.example.serega.instagramapi.services.InstagramService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,8 +29,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class LoginActivity extends Activity {
 
     private String codeFromUrl;
-    private InstagramClient service;
-    private Retrofit retrofit;
+    private InstagramService service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +37,6 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
 
         WebView webView = (WebView) findViewById(R.id.web_view);
-
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(new MyWebViewClient());
         webView.loadUrl(Constants.HOME_URL);
@@ -58,12 +58,9 @@ public class LoginActivity extends Activity {
             }
             if (url.contains(Constants.CONTAINS_URI)) {
                 codeFromUrl = url.substring(Constants.CONTAINS_URI.length(), url.length());
-                Log.i(">>> Url", url);
-                Log.i(">>> Code from url", codeFromUrl);
                 executeRequest();
                 /* add new page here */
             }
-
             return false;
         }
 
@@ -80,32 +77,31 @@ public class LoginActivity extends Activity {
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(logging);
 
-        retrofit = new Retrofit.Builder()
+        Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.API_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient.build())
                 .build();
 
-        service = retrofit.create(InstagramClient.class);
+        service = retrofit.create(InstagramService.class);
     }
 
     private void executeRequest() {
 
-        TokenRequest tokenRequest = new TokenRequest();
-        tokenRequest.setClient_id(Constants.CLIENT_ID);
-        tokenRequest.setClient_secret(Constants.CLIENT_SECRET);
-        tokenRequest.setGrant_type(Constants.GRANT_TYPE);
-        tokenRequest.setRedirect_uri(Constants.REDIRECT_URI);
-        tokenRequest.setCode(codeFromUrl);
-
-        Call<TokenResponse> tokenResponseCall = service.getTokenAccess(tokenRequest);
+        Call<TokenResponse> tokenResponseCall = service.getTokenAccess(
+                Constants.CLIENT_ID,
+                Constants.CLIENT_SECRET,
+                Constants.GRANT_TYPE,
+                Constants.REDIRECT_URI,
+                codeFromUrl
+        );
 
         tokenResponseCall.enqueue(new Callback<TokenResponse>() {
             @Override
             public void onResponse(Call<TokenResponse> call, Response<TokenResponse> response) {
                 if (response.isSuccessful()) {
                     TokenResponse tokenResponse = response.body();
-                    Log.i(">>> TokenResponse", tokenResponse.toString());
+                    User user =  tokenResponse.getUser();
                 } else {
                     printErrorLogs(response);
                 }
